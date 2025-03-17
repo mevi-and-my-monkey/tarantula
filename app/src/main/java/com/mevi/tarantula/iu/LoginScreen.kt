@@ -1,7 +1,6 @@
 package com.mevi.tarantula.iu
 
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,7 +26,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -49,8 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mevi.tarantula.R
+import com.mevi.tarantula.core.CustomOutlinedButton
 import com.mevi.tarantula.iu.login.LoginViewModel
+import com.mevi.tarantula.iu.login.SignUpBottomSheet
 import com.mevi.tarantula.ui.theme.AppShapes
+import com.mevi.tarantula.ui.theme.Fondo
 import com.mevi.tarantula.ui.theme.Primario
 import com.mevi.tarantula.ui.theme.Secundario
 import com.mevi.tarantula.ui.theme.TextoPrincipal
@@ -67,25 +68,29 @@ fun LoginScreen(
             .fillMaxSize()
             .background(Primario)
             .padding(8.dp)
+
     ) {
-        if (!loginViewModel.isLoading) {
+        if (loginViewModel.isLoading) {
             Box(
-                modifier
+                Modifier
                     .fillMaxSize()
+                    .background(Fondo)
                     .align(Alignment.Center)
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.align(alignment = Alignment.Center)
+                )
             }
         } else {
             Body(loginViewModel, navigationToHome, Modifier.align(Alignment.Center))
-            Footer(Modifier.align(Alignment.BottomCenter))
+            Footer(Modifier.align(Alignment.BottomCenter), loginViewModel, navigationToHome)
         }
     }
 }
 
 @Composable
 fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier: Modifier) {
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -99,84 +104,50 @@ fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier:
             modifier = Modifier.size(100.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
-
         Text(
             text = "Iniciar sesión",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Email(loginViewModel.email, modifier) {
             loginViewModel.onLoginChanged(email = it, password = loginViewModel.password)
         }
-
         Spacer(modifier = Modifier.height(8.dp))
-
         Password(loginViewModel.password, modifier) {
             loginViewModel.onLoginChanged(email = loginViewModel.email, password = it)
         }
-
         Spacer(modifier = Modifier.height(8.dp))
-
         Text(
             text = "Has olvidado tu contraseña",
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 14.sp,
             modifier = Modifier.clickable { /* Acción de recuperación */ }
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         LoginButton(loginViewModel.isLoginEnable, loginViewModel, navigationToHome)
-
-
         Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedButton(
-            onClick = { },
-            shape = AppShapes.medium,
-            modifier = Modifier.fillMaxWidth(0.8f),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = TextoSecundario
-            ),
-            border = BorderStroke(2.dp, Primario)
-        ) {
-            Icon(
-                painterResource(id = R.drawable.ic_google),
-                contentDescription = "Google",
-                tint = Primario
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Continua con Google", color = TextoSecundario)
-        }
-
+        CustomOutlinedButton(
+            onClick = {},
+            "Continua con Google",
+            iconResId = R.drawable.ic_google,
+            "Google",
+            modifier = Modifier
+        )
         Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedButton(
-            onClick = { /* Acción de invitado */ },
-            shape = MaterialTheme.shapes.medium,
-            modifier = Modifier.fillMaxWidth(0.8f),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = TextoSecundario,
-            ),
-            border = BorderStroke(2.dp, Primario)
-        ) {
-            Icon(
-                painterResource(id = R.drawable.ic_guest),
-                contentDescription = "Invitado",
-                tint = Primario
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Continua como invitado", color = TextoSecundario)
-        }
+        CustomOutlinedButton(
+            onClick = {},
+            "Continua como invitado",
+            R.drawable.ic_guest,
+            "Invitado",
+            Modifier
+        )
     }
 }
 
 @Composable
-fun Footer(modifier: Modifier) {
+fun Footer(modifier: Modifier, loginViewModel: LoginViewModel, navigationToHome: () -> Unit) {
     Column(modifier = modifier.fillMaxWidth()) {
         HorizontalDivider(
             Modifier
@@ -184,12 +155,14 @@ fun Footer(modifier: Modifier) {
                 .height(1.dp)
                 .fillMaxWidth()
         )
-        SignUp(modifier)
+        SignUp(modifier, loginViewModel, navigationToHome)
     }
 }
 
 @Composable
-fun SignUp(modifier: Modifier) {
+fun SignUp(modifier: Modifier, loginViewModel: LoginViewModel, navigationToHome: () -> Unit) {
+    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
+
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text("¿No tienes una cuenta?", color = TextoSecundario, fontSize = 14.sp)
         Spacer(modifier = Modifier.width(8.dp))
@@ -198,9 +171,10 @@ fun SignUp(modifier: Modifier) {
             color = TextoPrincipal,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.clickable { /* Acción de registro */ }
+            modifier = Modifier.clickable {
+                showBottomSheet = true
+            }
         )
-        Spacer(modifier = modifier.height(8.dp))
     }
     Spacer(modifier = modifier.height(8.dp))
     Text(
@@ -210,6 +184,24 @@ fun SignUp(modifier: Modifier) {
         textAlign = TextAlign.Center, modifier = modifier.fillMaxWidth()
     )
     Spacer(modifier = modifier.height(8.dp))
+
+    if (showBottomSheet) {
+        SignUpBottomSheet(
+            onDismiss = { showBottomSheet = false },
+            onRegister = { name, email, password , phone->
+                Log.i("Registro", "Nombre: $name, Email: $email, Contraseña: $password")
+                loginViewModel.signUp(name, email, password, phone){ success, resultMessage ->
+                    if (success) {
+                        Log.i("LOG", "$resultMessage")
+                        navigationToHome()
+                    } else {
+                        Log.i("ERROR_MESSAGE", "$resultMessage")
+                    }
+                }
+                showBottomSheet = false
+            }
+        )
+    }
 }
 
 @Composable
@@ -290,14 +282,6 @@ fun LoginButton(
 ) {
     Button(
         onClick = {
-            loginViewModel.signUp("Ale") { success, resultMessage ->
-                if (success) {
-                    Log.i("LOG", "$resultMessage")
-                    navigationToHome()
-                } else {
-                    Log.i("ERROR_MESSAGE", "$resultMessage")
-                }
-            }
         },
         enabled = loginEnable,
         colors = ButtonDefaults.buttonColors(containerColor = Primario),
