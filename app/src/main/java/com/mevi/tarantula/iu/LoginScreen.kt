@@ -1,9 +1,9 @@
 package com.mevi.tarantula.iu
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,14 +33,12 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -49,6 +47,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mevi.tarantula.R
 import com.mevi.tarantula.iu.login.LoginViewModel
 import com.mevi.tarantula.ui.theme.AppShapes
@@ -59,8 +58,8 @@ import com.mevi.tarantula.ui.theme.TextoSecundario
 
 @Composable
 fun LoginScreen(
-    loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier,
+    loginViewModel: LoginViewModel = viewModel(),
     navigationToHome: () -> Unit
 ) {
     Box(
@@ -69,10 +68,9 @@ fun LoginScreen(
             .background(Primario)
             .padding(8.dp)
     ) {
-        val isLoading: Boolean by loginViewModel.isLoading.observeAsState(initial = false)
-        if (isLoading) {
+        if (!loginViewModel.isLoading) {
             Box(
-                Modifier
+                modifier
                     .fillMaxSize()
                     .align(Alignment.Center)
             ) {
@@ -87,8 +85,6 @@ fun LoginScreen(
 
 @Composable
 fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier: Modifier) {
-    var email by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = modifier
@@ -113,36 +109,14 @@ fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier:
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            leadingIcon = {
-                Icon(
-                    painterResource(id = R.drawable.ic_email),
-                    contentDescription = "Email",
-                    tint = Primario
-                )
-            },
-            placeholder = { Text("Correo electrónico") },
-            modifier = Modifier.fillMaxWidth(0.8f),
-            maxLines = 1,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedTextColor = TextoSecundario,
-                focusedTextColor = TextoPrincipal,
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                disabledContainerColor = Primario,
-                focusedBorderColor = Primario,
-                unfocusedBorderColor = Secundario
-            )
-        )
+        Email(loginViewModel.email, modifier) {
+            loginViewModel.onLoginChanged(email = it, password = loginViewModel.password)
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Password(password, modifier) {
-            password = it
+        Password(loginViewModel.password, modifier) {
+            loginViewModel.onLoginChanged(email = loginViewModel.email, password = it)
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -156,21 +130,13 @@ fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier:
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = { /* Acción de login */ },
-            colors = ButtonDefaults.buttonColors(containerColor = Primario),
-            shape = AppShapes.medium,
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .clickable { navigationToHome() }
-        ) {
-            Text("Acceder", fontSize = 16.sp, color = Color.White)
-        }
+        LoginButton(loginViewModel.isLoginEnable, loginViewModel, navigationToHome)
+
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedButton(
-            onClick = { /* Acción de Google */ },
+            onClick = { },
             shape = AppShapes.medium,
             modifier = Modifier.fillMaxWidth(0.8f),
             colors = ButtonDefaults.outlinedButtonColors(
@@ -178,7 +144,11 @@ fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier:
             ),
             border = BorderStroke(2.dp, Primario)
         ) {
-            Icon(painterResource(id = R.drawable.ic_google), contentDescription = "Google", tint = Primario)
+            Icon(
+                painterResource(id = R.drawable.ic_google),
+                contentDescription = "Google",
+                tint = Primario
+            )
             Spacer(modifier = Modifier.width(8.dp))
             Text("Continua con Google", color = TextoSecundario)
         }
@@ -194,7 +164,11 @@ fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier:
             ),
             border = BorderStroke(2.dp, Primario)
         ) {
-            Icon(painterResource(id = R.drawable.ic_guest), contentDescription = "Invitado", tint = Primario)
+            Icon(
+                painterResource(id = R.drawable.ic_guest),
+                contentDescription = "Invitado",
+                tint = Primario
+            )
             Spacer(modifier = Modifier.width(8.dp))
             Text("Continua como invitado", color = TextoSecundario)
         }
@@ -239,6 +213,37 @@ fun SignUp(modifier: Modifier) {
 }
 
 @Composable
+fun Email(email: String, modifier: Modifier, onTextChanged: (String) -> Unit) {
+    OutlinedTextField(
+        value = email,
+        onValueChange = {
+            onTextChanged(it)
+        },
+        leadingIcon = {
+            Icon(
+                painterResource(id = R.drawable.ic_email),
+                contentDescription = "Email",
+                tint = Primario
+            )
+        },
+        placeholder = { Text("Correo electrónico") },
+        modifier = modifier.fillMaxWidth(0.8f),
+        maxLines = 1,
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        colors = OutlinedTextFieldDefaults.colors(
+            unfocusedTextColor = TextoSecundario,
+            focusedTextColor = TextoPrincipal,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Primario,
+            focusedBorderColor = Primario,
+            unfocusedBorderColor = Secundario
+        )
+    )
+}
+
+@Composable
 fun Password(password: String, modifier: Modifier, onTextChanged: (String) -> Unit) {
     var passwordVisibility by rememberSaveable { mutableStateOf(false) }
 
@@ -275,4 +280,32 @@ fun Password(password: String, modifier: Modifier, onTextChanged: (String) -> Un
             unfocusedBorderColor = Secundario
         )
     )
+}
+
+@Composable
+fun LoginButton(
+    loginEnable: Boolean,
+    loginViewModel: LoginViewModel,
+    navigationToHome: () -> Unit
+) {
+    Button(
+        onClick = {
+            loginViewModel.signUp("Ale") { success, resultMessage ->
+                if (success) {
+                    Log.i("LOG", "$resultMessage")
+                    navigationToHome()
+                } else {
+                    Log.i("ERROR_MESSAGE", "$resultMessage")
+                }
+            }
+        },
+        enabled = loginEnable,
+        colors = ButtonDefaults.buttonColors(containerColor = Primario),
+        shape = AppShapes.medium,
+        modifier = Modifier
+            .fillMaxWidth(0.8f)
+            .clickable { navigationToHome() }
+    ) {
+        Text("Acceder", fontSize = 16.sp, color = Color.White)
+    }
 }

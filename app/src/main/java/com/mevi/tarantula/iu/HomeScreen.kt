@@ -1,5 +1,9 @@
 package com.mevi.tarantula.iu
 
-fun HomeScreen(navigationToHome: () -> Unit) {
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
+
+@Composable
+fun HomeScreen(navController: NavController) {
 
 }

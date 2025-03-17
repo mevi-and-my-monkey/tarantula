@@ -1,53 +1,89 @@
 package com.mevi.tarantula.iu.login
 
-import android.util.Log
 import android.util.Patterns
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.compose.runtime.*
+import com.google.firebase.Firebase
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
+import com.mevi.tarantula.User
+import com.mevi.tarantula.core.AuthState
+import com.mevi.tarantula.network.UserModel
+
 
 @HiltViewModel
 class LoginViewModel @Inject constructor() : ViewModel() {
+    private val aut = Firebase.auth
+    private val firestore = Firebase.firestore
 
-    private val _email = MutableLiveData<String>()
-    val email: LiveData<String> = _email
+    var isLoading by mutableStateOf(false)
+        private set
 
-    private val _password = MutableLiveData<String>()
-    val password: LiveData<String> = _password
+    var email by mutableStateOf("")
+        private set
 
-    private val _isLoginEnable = MutableLiveData<Boolean>()
-    val isLoginEnable: LiveData<Boolean> = _isLoginEnable
+    var password by mutableStateOf("")
+        private set
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
+    var isLoginEnable by mutableStateOf(false)
+        private set
 
-    fun onLoginChanged(email: String, password: String) {
-        _email.value = email
-        _password.value = password
-        _isLoginEnable.value = enableLogin(email = email, password = password)
-    }
+    var authState by mutableStateOf<AuthState>(AuthState.Idle)
+        private set
 
-    fun enableLogin(email: String, password: String) =
-        Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
-/*
-    fun onLoginSelected() {
-        viewModelScope.launch {
-            _isLoading.value = true
-            val request = LoginRequest(email = email.value ?: "", password = password.value ?: "")
-            val result = loginUseCase(request)
-            if (result != null) {
-                Log.i("Alex", "Login exitoso: ${result.token}")
+    fun signUp(name: String, onResult: (Boolean, String?) -> Unit) {
+        isLoading = true
+        aut.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
+            if (it.isSuccessful) {
+                isLoading = false
+                val userid = it.result?.user?.uid
+                val userModel = UserModel(name, email, userid!!)
+                firestore.collection("users").document(userid).set(userModel)
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            onResult(true, null)
+                        } else {
+                            onResult(false, "Something went wrong")
+                        }
+                    }
             } else {
-                Log.e("Alex", "Error en login: respuesta nula")
+                isLoading = false
+                onResult(false, it.exception?.localizedMessage)
             }
-            _isLoading.value = false
-
         }
     }
 
- */
+    fun onLoginChanged(email: String, password: String) {
+        this.email = email
+        this.password = password
+        isLoginEnable = enableLogin(email = email, password = password)
+    }
+
+    private fun enableLogin(email: String, password: String) =
+        Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
+
+
+
+    private fun firebaseAuthConGoogle(idToken: String) {
+        val auth = FirebaseAuth.getInstance()
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+
+        auth.signInWithCredential(credential).addOnCompleteListener() { task ->
+            if (task.isSuccessful) {
+                val user = auth.currentUser
+                User.userId = user?.uid.toString()
+                user?.let {
+                }
+            } else {
+                task.exception?.let {
+                    println("Error en la autenticación con Firebase: ${it.message}")
+                }
+            }
+        }
+    }
 }

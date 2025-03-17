@@ -5,6 +5,7 @@ plugins {
     kotlin("kapt")
     alias(libs.plugins.jetbrainsKotlinSerialization)
     alias(libs.plugins.kotlin.parcelize)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -67,6 +68,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.auth.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -103,4 +105,15 @@ dependencies {
     // Glide
     implementation(libs.glide.v4151)
     annotationProcessor(libs.compiler.v4151)
+
+    implementation(platform(libs.firebase.bom))
+
+    // Firebase libraries gestionadas por el BOM
+    implementation(libs.firebase.firestore.ktx)
+    // Firebase
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.play.services.auth)
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+
 }

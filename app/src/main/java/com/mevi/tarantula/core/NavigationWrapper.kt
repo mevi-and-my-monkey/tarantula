@@ -5,19 +5,29 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.mevi.tarantula.iu.HomeScreen
 import com.mevi.tarantula.iu.LoginScreen
 import com.mevi.tarantula.iu.SplashScreen
 import com.mevi.tarantula.iu.login.LoginViewModel
 
 @Composable
-fun NavigationWrapper(loginViewModel: LoginViewModel, modifier: Modifier = Modifier) {
+fun NavigationWrapper(
+    loginViewModel: LoginViewModel,
+    modifier: Modifier = Modifier
+) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Splash) {
         composable<Splash> {
             SplashScreen(navController)
         }
         composable<Login> {
-            LoginScreen(loginViewModel, modifier = modifier) { navController.navigate(Home) }
+            LoginScreen(
+                modifier = modifier,
+                loginViewModel,
+            ) { navController.navigate(Home) }
+        }
+        composable<Home> {
+            HomeScreen(navController)
         }
     }
 }
