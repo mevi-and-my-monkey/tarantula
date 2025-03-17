@@ -51,10 +51,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -91,7 +91,6 @@ dependencies {
     debugImplementation(libs.ui.tooling)
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.navigation.compose)
-
     //retrofit
     implementation(libs.gson)
     implementation(libs.retrofit)
@@ -99,5 +98,9 @@ dependencies {
     // Inyeccion de dependecias
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-
+    // dataStore
+    implementation(libs.androidx.datastore.preferences)
+    // Glide
+    implementation(libs.glide.v4151)
+    annotationProcessor(libs.compiler.v4151)
 }
