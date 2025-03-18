@@ -8,11 +8,11 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.mevi.tarantula.core.NavigationWrapper
 import com.mevi.tarantula.iu.login.LoginViewModel
-import com.mevi.tarantula.ui.theme.Primario
 import com.mevi.tarantula.ui.theme.TarantulaTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,13 +25,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TarantulaTheme {
-                Scaffold(modifier = Modifier
-                    .fillMaxSize()
-                    .background(Primario)) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.primary)
+                ) { innerPadding ->
                     NavigationWrapper(
                         loginViewModel,
                         modifier = Modifier.padding(innerPadding)
-                        )
+                    )
                 }
             }
         }

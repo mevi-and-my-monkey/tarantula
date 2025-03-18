@@ -36,6 +36,13 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     var authState by mutableStateOf<AuthState>(AuthState.Idle)
         private set
 
+    private val _adminEmails = mutableStateOf(listOf(""))
+    val adminEmails: State<List<String>> = _adminEmails
+
+    fun setAdminEmails(emails: List<String>?) {
+        _adminEmails.value = emails ?: listOf("")
+    }
+
     fun signUp(name: String, email: String, password: String, phone:String, onResult: (Boolean, String?) -> Unit) {
         isLoading = true
         aut.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
@@ -44,8 +51,8 @@ class LoginViewModel @Inject constructor() : ViewModel() {
                 val userid = it.result?.user?.uid
                 val userModel = UserModel(name, email, userid!!, phone)
                 firestore.collection("users").document(userid).set(userModel)
-                    .addOnCompleteListener {
-                        if (it.isSuccessful) {
+                    .addOnCompleteListener { response->
+                    if (response.isSuccessful) {
                             onResult(true, null)
                         } else {
                             onResult(false, "Something went wrong")

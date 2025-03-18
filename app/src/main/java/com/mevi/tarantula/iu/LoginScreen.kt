@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,8 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mevi.tarantula.R
+import com.mevi.tarantula.User
 import com.mevi.tarantula.core.CustomOutlinedButton
 import com.mevi.tarantula.iu.login.LoginViewModel
 import com.mevi.tarantula.iu.login.SignUpBottomSheet
@@ -55,7 +56,10 @@ import com.mevi.tarantula.ui.theme.Fondo
 import com.mevi.tarantula.ui.theme.Primario
 import com.mevi.tarantula.ui.theme.Secundario
 import com.mevi.tarantula.ui.theme.TextoPrincipal
+import com.mevi.tarantula.ui.theme.TextoPrincipalD
 import com.mevi.tarantula.ui.theme.TextoSecundario
+import com.mevi.tarantula.ui.theme.TextoSecundarioD
+import com.mevi.tarantula.utils.Utilities
 
 @Composable
 fun LoginScreen(
@@ -121,23 +125,27 @@ fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier:
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "Has olvidado tu contraseña",
-            color = MaterialTheme.colorScheme.onSurface,
+            color = if (isSystemInDarkTheme()) TextoSecundarioD else TextoSecundario,
             fontSize = 14.sp,
             modifier = Modifier.clickable { /* Acción de recuperación */ }
         )
         Spacer(modifier = Modifier.height(16.dp))
-        LoginButton(loginViewModel.isLoginEnable, loginViewModel, navigationToHome)
+        LoginButton(loginViewModel.isLoginEnable, navigationToHome)
         Spacer(modifier = Modifier.height(8.dp))
         CustomOutlinedButton(
-            onClick = {},
+            onClick = {
+
+            },
             "Continua con Google",
-            iconResId = R.drawable.ic_google,
+            iconResId = R.drawable.ic_google ,
             "Google",
             modifier = Modifier
         )
         Spacer(modifier = Modifier.height(8.dp))
         CustomOutlinedButton(
-            onClick = {},
+            onClick = {
+                User.userInvited = true
+            },
             "Continua como invitado",
             R.drawable.ic_guest,
             "Invitado",
@@ -192,7 +200,7 @@ fun SignUp(modifier: Modifier, loginViewModel: LoginViewModel, navigationToHome:
                 Log.i("Registro", "Nombre: $name, Email: $email, Contraseña: $password")
                 loginViewModel.signUp(name, email, password, phone){ success, resultMessage ->
                     if (success) {
-                        Log.i("LOG", "$resultMessage")
+                        User.userAdmin = Utilities.isAdmin(loginViewModel, email)
                         navigationToHome()
                     } else {
                         Log.i("ERROR_MESSAGE", "$resultMessage")
@@ -213,7 +221,7 @@ fun Email(email: String, modifier: Modifier, onTextChanged: (String) -> Unit) {
         },
         leadingIcon = {
             Icon(
-                painterResource(id = R.drawable.ic_email),
+                Icons.Default.Email,
                 contentDescription = "Email",
                 tint = Primario
             )
@@ -224,8 +232,8 @@ fun Email(email: String, modifier: Modifier, onTextChanged: (String) -> Unit) {
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedTextColor = TextoSecundario,
-            focusedTextColor = TextoPrincipal,
+            unfocusedTextColor = if (isSystemInDarkTheme()) TextoSecundarioD else TextoSecundario,
+            focusedTextColor = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
             disabledContainerColor = Primario,
@@ -246,12 +254,12 @@ fun Password(password: String, modifier: Modifier, onTextChanged: (String) -> Un
         modifier = modifier.fillMaxWidth(0.8f),
         trailingIcon = {
             val imagen = if (passwordVisibility) {
-                Icons.Filled.Clear
+                R.drawable.ic_eye
             } else {
-                Icons.Filled.Check
+                R.drawable.ic_eye_closed
             }
             IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                Icon(imageVector = imagen, contentDescription = "show password", tint = Primario)
+                Icon(painterResource(imagen) , contentDescription = "show password", tint = Primario)
             }
         },
         visualTransformation = if (passwordVisibility) {
@@ -263,8 +271,8 @@ fun Password(password: String, modifier: Modifier, onTextChanged: (String) -> Un
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedTextColor = TextoSecundario,
-            focusedTextColor = TextoPrincipal,
+            unfocusedTextColor = if (isSystemInDarkTheme()) TextoSecundarioD else TextoSecundario,
+            focusedTextColor = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
             disabledContainerColor = Primario,
@@ -277,7 +285,6 @@ fun Password(password: String, modifier: Modifier, onTextChanged: (String) -> Un
 @Composable
 fun LoginButton(
     loginEnable: Boolean,
-    loginViewModel: LoginViewModel,
     navigationToHome: () -> Unit
 ) {
     Button(

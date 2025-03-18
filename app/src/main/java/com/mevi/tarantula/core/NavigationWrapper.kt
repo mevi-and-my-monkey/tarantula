@@ -18,7 +18,7 @@ fun NavigationWrapper(
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Splash) {
         composable<Splash> {
-            SplashScreen(navController)
+            SplashScreen(navController, loginViewModel)
         }
         composable<Login> {
             LoginScreen(
