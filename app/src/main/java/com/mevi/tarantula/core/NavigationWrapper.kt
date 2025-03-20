@@ -16,6 +16,8 @@ fun NavigationWrapper(
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
+
+
     NavHost(navController = navController, startDestination = Splash) {
         composable<Splash> {
             SplashScreen(navController, loginViewModel)
@@ -24,10 +26,14 @@ fun NavigationWrapper(
             LoginScreen(
                 modifier = modifier,
                 loginViewModel,
-            ) { navController.navigate(Home) }
+            ) {
+                navController.navigate(Home) {
+                    popUpTo<Home> { inclusive = true }
+                }
+            }
         }
         composable<Home> {
-            HomeScreen(navController)
+            HomeScreen(modifier = modifier,navController)
         }
     }
 }

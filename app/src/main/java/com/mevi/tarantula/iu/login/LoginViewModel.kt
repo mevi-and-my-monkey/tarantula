@@ -43,23 +43,44 @@ class LoginViewModel @Inject constructor() : ViewModel() {
         _adminEmails.value = emails ?: listOf("")
     }
 
-    fun signUp(name: String, email: String, password: String, phone:String, onResult: (Boolean, String?) -> Unit) {
+    fun showLoading() {
         isLoading = true
+    }
+
+    fun hideLoading() {
+        isLoading = false
+    }
+
+    fun login(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
+        aut.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+            if (it.isSuccessful){
+                onResult(true, null)
+            }else{
+                onResult(false, it.exception?.localizedMessage)
+            }
+        }
+    }
+
+    fun signUp(
+        name: String,
+        email: String,
+        password: String,
+        phone: String,
+        onResult: (Boolean, String?) -> Unit
+    ) {
         aut.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
             if (it.isSuccessful) {
-                isLoading = false
                 val userid = it.result?.user?.uid
                 val userModel = UserModel(name, email, userid!!, phone)
                 firestore.collection("users").document(userid).set(userModel)
-                    .addOnCompleteListener { response->
-                    if (response.isSuccessful) {
+                    .addOnCompleteListener { response ->
+                        if (response.isSuccessful) {
                             onResult(true, null)
                         } else {
                             onResult(false, "Something went wrong")
                         }
                     }
             } else {
-                isLoading = false
                 onResult(false, it.exception?.localizedMessage)
             }
         }
@@ -73,7 +94,6 @@ class LoginViewModel @Inject constructor() : ViewModel() {
 
     private fun enableLogin(email: String, password: String) =
         Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
-
 
 
     private fun firebaseAuthConGoogle(idToken: String) {

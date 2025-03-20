@@ -1,6 +1,7 @@
 package com.mevi.tarantula.iu
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -130,14 +132,14 @@ fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier:
             modifier = Modifier.clickable { /* Acción de recuperación */ }
         )
         Spacer(modifier = Modifier.height(16.dp))
-        LoginButton(loginViewModel.isLoginEnable, navigationToHome)
+        LoginButton(loginViewModel.isLoginEnable, navigationToHome, loginViewModel)
         Spacer(modifier = Modifier.height(8.dp))
         CustomOutlinedButton(
             onClick = {
 
             },
             "Continua con Google",
-            iconResId = R.drawable.ic_google ,
+            iconResId = R.drawable.ic_google,
             "Google",
             modifier = Modifier
         )
@@ -170,6 +172,7 @@ fun Footer(modifier: Modifier, loginViewModel: LoginViewModel, navigationToHome:
 @Composable
 fun SignUp(modifier: Modifier, loginViewModel: LoginViewModel, navigationToHome: () -> Unit) {
     var showBottomSheet by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         Text("¿No tienes una cuenta?", color = TextoSecundario, fontSize = 14.sp)
@@ -196,13 +199,16 @@ fun SignUp(modifier: Modifier, loginViewModel: LoginViewModel, navigationToHome:
     if (showBottomSheet) {
         SignUpBottomSheet(
             onDismiss = { showBottomSheet = false },
-            onRegister = { name, email, password , phone->
-                Log.i("Registro", "Nombre: $name, Email: $email, Contraseña: $password")
-                loginViewModel.signUp(name, email, password, phone){ success, resultMessage ->
+            onRegister = { name, email, password, phone ->
+                loginViewModel.showLoading()
+                loginViewModel.signUp(name, email, password, phone) { success, resultMessage ->
                     if (success) {
                         User.userAdmin = Utilities.isAdmin(loginViewModel, email)
+                        loginViewModel.hideLoading()
                         navigationToHome()
                     } else {
+                        loginViewModel.hideLoading()
+                        Toast.makeText(context, "$resultMessage", Toast.LENGTH_LONG).show()
                         Log.i("ERROR_MESSAGE", "$resultMessage")
                     }
                 }
@@ -259,7 +265,7 @@ fun Password(password: String, modifier: Modifier, onTextChanged: (String) -> Un
                 R.drawable.ic_eye_closed
             }
             IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                Icon(painterResource(imagen) , contentDescription = "show password", tint = Primario)
+                Icon(painterResource(imagen), contentDescription = "show password", tint = Primario)
             }
         },
         visualTransformation = if (passwordVisibility) {
@@ -285,10 +291,24 @@ fun Password(password: String, modifier: Modifier, onTextChanged: (String) -> Un
 @Composable
 fun LoginButton(
     loginEnable: Boolean,
-    navigationToHome: () -> Unit
+    navigationToHome: () -> Unit,
+    loginViewModel: LoginViewModel
 ) {
+    val context = LocalContext.current
     Button(
         onClick = {
+            loginViewModel.showLoading()
+            loginViewModel.login(loginViewModel.email, loginViewModel.password) { success, resultMessage ->
+                if (success) {
+                    User.userAdmin = Utilities.isAdmin(loginViewModel, loginViewModel.email)
+                    loginViewModel.hideLoading()
+                    navigationToHome()
+                } else {
+                    loginViewModel.hideLoading()
+                    Toast.makeText(context, "$resultMessage", Toast.LENGTH_LONG).show()
+                    Log.i("ERROR_MESSAGE", "$resultMessage")
+                }
+            }
         },
         enabled = loginEnable,
         colors = ButtonDefaults.buttonColors(containerColor = Primario),
