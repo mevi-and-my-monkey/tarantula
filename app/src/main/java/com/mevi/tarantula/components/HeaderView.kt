@@ -23,18 +23,22 @@ import androidx.compose.ui.unit.sp
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
+import com.mevi.tarantula.User
 
 @Composable
 fun HeaderView(modifier: Modifier = Modifier) {
 
     var name by rememberSaveable { mutableStateOf("") }
-
-    LaunchedEffect(Unit) {
-        Firebase.firestore.collection("users")
-            .document(FirebaseAuth.getInstance().currentUser?.uid!!)
-            .get().addOnCompleteListener {
-                name = it.result.get("name").toString().split(" ")[0]
-            }
+    if (!User.userInvited) {
+        LaunchedEffect(Unit) {
+            Firebase.firestore.collection("users")
+                .document(FirebaseAuth.getInstance().currentUser?.uid!!)
+                .get().addOnCompleteListener {
+                    name = it.result.get("name").toString().split(" ")[0]
+                }
+        }
+    } else {
+        name = "Invitado"
     }
 
     Row(
@@ -43,7 +47,7 @@ fun HeaderView(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
-            Text("Bienvenido de nuevo")
+            Text(if (!User.userInvited) "Bienvenido de nuevo" else "Bienvenido")
             Text(text = name, style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold))
         }
         IconButton(onClick = {}) {

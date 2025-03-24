@@ -147,6 +147,7 @@ fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier:
         CustomOutlinedButton(
             onClick = {
                 User.userInvited = true
+                 navigationToHome()
             },
             "Continua como invitado",
             R.drawable.ic_guest,
