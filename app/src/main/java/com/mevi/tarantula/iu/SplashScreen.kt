@@ -39,6 +39,7 @@ fun SplashScreen(navController: NavController, loginViewModel: LoginViewModel) {
     if (isLoggedIn) {
         Log.i("FIREBASE_USE", Firebase.auth.currentUser?.email.toString())
         User.userAdmin = Utilities.isAdmin(loginViewModel, Firebase.auth.currentUser?.email.toString())
+        User.userInvited = false
     }
     LaunchedEffect(Unit) {
         val remoteConfig = Firebase.remoteConfig

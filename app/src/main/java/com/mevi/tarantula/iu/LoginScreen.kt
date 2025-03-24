@@ -302,6 +302,7 @@ fun LoginButton(
             loginViewModel.login(loginViewModel.email, loginViewModel.password) { success, resultMessage ->
                 if (success) {
                     User.userAdmin = Utilities.isAdmin(loginViewModel, loginViewModel.email)
+                    User.userInvited = false
                     loginViewModel.hideLoading()
                     navigationToHome()
                 } else {
@@ -316,7 +317,6 @@ fun LoginButton(
         shape = AppShapes.medium,
         modifier = Modifier
             .fillMaxWidth(0.8f)
-            .clickable { navigationToHome() }
     ) {
         Text("Acceder", fontSize = 16.sp, color = Color.White)
     }
