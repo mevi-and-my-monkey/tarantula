@@ -7,13 +7,17 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import androidx.compose.runtime.*
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.GoogleAuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.mevi.tarantula.User
 import com.mevi.tarantula.core.AuthState
 import com.mevi.tarantula.network.UserModel
+import kotlinx.coroutines.launch
 
 
 @HiltViewModel
@@ -53,11 +57,45 @@ class LoginViewModel @Inject constructor() : ViewModel() {
 
     fun login(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
         aut.signInWithEmailAndPassword(email, password).addOnCompleteListener {
-            if (it.isSuccessful){
+            if (it.isSuccessful) {
                 onResult(true, null)
-            }else{
+            } else {
                 onResult(false, it.exception?.localizedMessage)
             }
+        }
+    }
+
+    fun signInWithGoogleCredential(
+        credential: AuthCredential,
+        onResult: (Boolean, String?) -> Unit
+    ) = viewModelScope.launch {
+        try {
+            aut.signInWithCredential(credential).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val userid = task.result?.user?.uid
+                    val userModel = UserModel(
+                        task.result.user?.displayName ?: "Sin dato",
+                        task.result.user?.email ?: "Sin dato",
+                        userid!!,
+                        task.result.user?.phoneNumber ?: "Sin dato"
+                    )
+                    firestore.collection("users").document(userid).set(userModel)
+                        .addOnCompleteListener { response ->
+                            if (response.isSuccessful) {
+                                onResult(true, null)
+                            } else {
+                                onResult(false, "Something went wrong")
+                            }
+                        }
+                    onResult(true, null)
+                } else {
+                    onResult(false, "Fallo la autenticacion con Google")
+                }
+            }.addOnFailureListener {
+                onResult(false, "Fallo la autenticacion con Google")
+            }
+        } catch (e: Exception) {
+            onResult(false, e.localizedMessage)
         }
     }
 
@@ -95,22 +133,4 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     private fun enableLogin(email: String, password: String) =
         Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
 
-
-    private fun firebaseAuthConGoogle(idToken: String) {
-        val auth = FirebaseAuth.getInstance()
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-
-        auth.signInWithCredential(credential).addOnCompleteListener() { task ->
-            if (task.isSuccessful) {
-                val user = auth.currentUser
-                User.userId = user?.uid.toString()
-                user?.let {
-                }
-            } else {
-                task.exception?.let {
-                    println("Error en la autenticación con Firebase: ${it.message}")
-                }
-            }
-        }
-    }
 }

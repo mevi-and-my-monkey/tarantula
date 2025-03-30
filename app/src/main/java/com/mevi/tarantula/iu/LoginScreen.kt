@@ -2,6 +2,8 @@ package com.mevi.tarantula.iu
 
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,6 +50,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
 import com.mevi.tarantula.R
 import com.mevi.tarantula.User
 import com.mevi.tarantula.core.CustomOutlinedButton
@@ -97,6 +103,31 @@ fun LoginScreen(
 
 @Composable
 fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier: Modifier) {
+    val context = LocalContext.current
+    val token = "AIzaSyCWhuEqyahF4_pLIurw83q889dE1nsHS34"
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                loginViewModel.signInWithGoogleCredential(credential) { success, resultMessage ->
+                    if (success) {
+                        User.userAdmin = Utilities.isAdmin(loginViewModel, account.email?:"Sin dato")
+                        User.userInvited = false
+                        loginViewModel.hideLoading()
+                        navigationToHome()
+                    } else {
+                        loginViewModel.hideLoading()
+                        Toast.makeText(context, "$resultMessage", Toast.LENGTH_LONG).show()
+                        Log.i("ERROR_MESSAGE", "$resultMessage")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d("Google_aut", "Google SignIn fallo")
+            }
+
+        }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -136,7 +167,12 @@ fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier:
         Spacer(modifier = Modifier.height(8.dp))
         CustomOutlinedButton(
             onClick = {
-
+                val opciones = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(context.getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build()
+                val googleSignInCliente = GoogleSignIn.getClient(context, opciones)
+                launcher.launch(googleSignInCliente.signInIntent)
             },
             "Continua con Google",
             iconResId = R.drawable.ic_google,
@@ -147,7 +183,7 @@ fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier:
         CustomOutlinedButton(
             onClick = {
                 User.userInvited = true
-                 navigationToHome()
+                navigationToHome()
             },
             "Continua como invitado",
             R.drawable.ic_guest,
@@ -299,7 +335,10 @@ fun LoginButton(
     Button(
         onClick = {
             loginViewModel.showLoading()
-            loginViewModel.login(loginViewModel.email, loginViewModel.password) { success, resultMessage ->
+            loginViewModel.login(
+                loginViewModel.email,
+                loginViewModel.password
+            ) { success, resultMessage ->
                 if (success) {
                     User.userAdmin = Utilities.isAdmin(loginViewModel, loginViewModel.email)
                     User.userInvited = false
