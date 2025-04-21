@@ -104,9 +104,9 @@ fun LoginScreen(
 @Composable
 fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier: Modifier) {
     val context = LocalContext.current
-    val token = "AIzaSyCWhuEqyahF4_pLIurw83q889dE1nsHS34"
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+            loginViewModel.showLoading()
             val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
             try {
                 val account = task.getResult(ApiException::class.java)
