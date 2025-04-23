@@ -13,3 +13,6 @@ object Home
 
 @Serializable
 object CategoryProducts
+
+@Serializable
+object ProductDetails

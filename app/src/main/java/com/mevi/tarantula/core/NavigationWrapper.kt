@@ -11,6 +11,7 @@ import com.mevi.tarantula.iu.LoginScreen
 import com.mevi.tarantula.iu.SplashScreen
 import com.mevi.tarantula.iu.login.LoginViewModel
 import com.mevi.tarantula.iu.pages.CategoryProductsPage
+import com.mevi.tarantula.iu.pages.ProductDetailsPage
 
 @Composable
 fun NavigationWrapper(
@@ -36,8 +37,13 @@ fun NavigationWrapper(
         }
 
         composable("${CategoryProducts}/{categoryId}") {
-            var categoryId = it.arguments?.getString("categoryId")
+            val categoryId = it.arguments?.getString("categoryId")
             CategoryProductsPage(modifier = modifier, navController, categoryId?: "")
+        }
+
+        composable("${ProductDetails}/{productId}") {
+            val productId = it.arguments?.getString("productId")
+            ProductDetailsPage(modifier = modifier, productId?: "")
         }
     }
 }
