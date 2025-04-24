@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -42,6 +43,7 @@ import com.mevi.tarantula.utils.Utilities
 
 @Composable
 fun ProductItemView(modifier: Modifier = Modifier, product: ProductModel) {
+    val context = LocalContext.current
     Card(
         modifier = modifier
             .padding(8.dp)
@@ -100,7 +102,9 @@ fun ProductItemView(modifier: Modifier = Modifier, product: ProductModel) {
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    Utilities.addItemToCart(product.id, context)
+                }) {
                     Icon(
                         imageVector = Icons.Default.ShoppingCart,
                         contentDescription = "Add to cart"

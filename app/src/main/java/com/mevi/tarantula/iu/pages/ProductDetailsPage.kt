@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -54,6 +55,7 @@ import com.tbuonomo.viewpagerdotsindicator.compose.type.ShiftIndicatorType
 fun ProductDetailsPage(modifier: Modifier = Modifier, productId: String) {
     var product by remember { mutableStateOf(ProductModel()) }
 
+    val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
         Firebase.firestore.collection("data").document("stock").collection("products")
             .document(productId).get()
@@ -151,11 +153,13 @@ fun ProductDetailsPage(modifier: Modifier = Modifier, productId: String) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
-            onClick = {}, modifier = Modifier
+            onClick = {
+                Utilities.addItemToCart(productId, context)
+            }, modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text("Solicitar información", fontSize = 16.sp)
+            Text("Agregar al carrito", fontSize = 16.sp)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -165,15 +169,18 @@ fun ProductDetailsPage(modifier: Modifier = Modifier, productId: String) {
         Text(text = product.description, fontSize = 16.sp)
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (product.otherDetails.isNotEmpty())
-        Text(text = "Otros detalles : ", fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
-        Spacer(modifier = Modifier.height(8.dp))
-        product.otherDetails.forEach { (key, value) ->
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp)) {
-                Text(text = "$key : ", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                Text(text = value, fontSize = 16.sp)
+        if (product.otherDetails.isNotEmpty()) {
+            Text(text = "Otros detalles : ", fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+            product.otherDetails.forEach { (key, value) ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp)
+                ) {
+                    Text(text = "$key : ", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                    Text(text = value, fontSize = 16.sp)
+                }
             }
         }
     }

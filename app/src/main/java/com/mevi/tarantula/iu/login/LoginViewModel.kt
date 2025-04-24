@@ -79,14 +79,21 @@ class LoginViewModel @Inject constructor() : ViewModel() {
                         userid!!,
                         task.result.user?.phoneNumber ?: "Sin dato"
                     )
-                    firestore.collection("users").document(userid).set(userModel)
-                        .addOnCompleteListener { response ->
-                            if (response.isSuccessful) {
-                                onResult(true, null)
-                            } else {
-                                onResult(false, "Something went wrong")
-                            }
+                    val userDoc = firestore.collection("users").document(userid)
+                    userDoc.get().addOnSuccessListener { snapshot ->
+                        if (!snapshot.exists()) {
+                            userDoc.set(userModel)
+                                .addOnCompleteListener { response ->
+                                    if (response.isSuccessful) {
+                                        onResult(true, null)
+                                    } else {
+                                        onResult(false, "Something went wrong")
+                                    }
+                                }
+                        } else {
+                            onResult(true, null)
                         }
+                    }
                     onResult(true, null)
                 } else {
                     onResult(false, "Fallo la autenticacion con Google")
@@ -110,14 +117,20 @@ class LoginViewModel @Inject constructor() : ViewModel() {
             if (it.isSuccessful) {
                 val userid = it.result?.user?.uid
                 val userModel = UserModel(name, email, userid!!, phone)
-                firestore.collection("users").document(userid).set(userModel)
-                    .addOnCompleteListener { response ->
-                        if (response.isSuccessful) {
-                            onResult(true, null)
-                        } else {
-                            onResult(false, "Something went wrong")
+                val userDoc = firestore.collection("users").document(userid)
+                userDoc.get().addOnSuccessListener { document ->
+                    if (!document.exists()) {
+                        userDoc.set(userModel).addOnCompleteListener { response ->
+                            if (response.isSuccessful) {
+                                onResult(true, null)
+                            } else {
+                                onResult(false, "Something went wrong")
+                            }
                         }
+                    } else {
+                        onResult(true, null)
                     }
+                }
             } else {
                 onResult(false, it.exception?.localizedMessage)
             }

@@ -1,5 +1,10 @@
 package com.mevi.tarantula.utils
 
+import android.content.Context
+import android.widget.Toast
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.firestore
 import com.mevi.tarantula.iu.login.LoginViewModel
 
 object Utilities {
@@ -17,6 +22,29 @@ object Utilities {
             "https://drive.google.com/uc?export=download&id=$id"
         } else {
             originalUrl // fallback
+        }
+    }
+
+    fun addItemToCart(productId: String, context: Context) {
+        val userDoc = Firebase.firestore.collection("users")
+            .document(FirebaseAuth.getInstance().currentUser?.uid!!)
+
+        userDoc.get().addOnCompleteListener {
+            if (it.isSuccessful) {
+                val currentCart = it.result.get("cartItems") as? Map<String, Long> ?: emptyMap()
+                val currentQuantity = currentCart[productId] ?: 0
+                val updatedQuantity = currentQuantity + 1
+
+                val updatedCart = mapOf("cartItems.$productId" to updatedQuantity)
+
+                userDoc.update(updatedCart).addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        Toast.makeText(context, "Articulo guardado en favoritos", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Error al agregar a favoritos", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
     }
 }

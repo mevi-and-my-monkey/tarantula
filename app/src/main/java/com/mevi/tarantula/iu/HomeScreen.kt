@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.mevi.tarantula.iu.pages.CartPage
 import com.mevi.tarantula.iu.pages.EventsPage
 import com.mevi.tarantula.iu.pages.FavoritePage
 import com.mevi.tarantula.iu.pages.HomePage
@@ -41,6 +43,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
             NavItemList("Home", Icons.Default.Home),
             NavItemList("Favoritos", Icons.Default.Favorite),
             NavItemList("Eventos", Icons.Default.DateRange),
+            NavItemList("Carrito", Icons.Default.ShoppingCart),
             NavItemList("Perfil", Icons.Default.Person)
         )
 
@@ -58,7 +61,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController) {
                         Icon(imageVector = navItem.icon, contentDescription = navItem.label)
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedTextColor = if (isSystemInDarkTheme()) TextoPrincipalD  else TextoPrincipal,
+                        selectedTextColor = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
                         unselectedTextColor = if (isSystemInDarkTheme()) TextoSecundarioD else TextoSecundario,
                         indicatorColor = IndicatorNavgation,
                         unselectedIconColor = Primario,
@@ -80,7 +83,8 @@ fun ContentScreen(modifier: Modifier, selectedIndex: Int, navController: NavCont
         0 -> HomePage(modifier.padding(horizontal = 8.dp))
         1 -> FavoritePage(modifier.padding(horizontal = 8.dp))
         2 -> EventsPage(modifier.padding(horizontal = 8.dp))
-        3 -> ProfilePage(modifier.padding(horizontal = 8.dp), navController)
+        3 -> CartPage(modifier.padding(horizontal = 8.dp))
+        4 -> ProfilePage(modifier.padding(horizontal = 8.dp), navController)
     }
 }
 
