@@ -39,9 +39,9 @@ object Utilities {
 
                 userDoc.update(updatedCart).addOnCompleteListener {
                     if (it.isSuccessful) {
-                        Toast.makeText(context, "Articulo guardado en favoritos", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Articulo agregado al carrito", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(context, "Error al agregar a favoritos", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Error al agregar al carrito", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

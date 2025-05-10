@@ -2,6 +2,7 @@ package com.mevi.tarantula.iu.pages
 
 import android.widget.Space
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,6 +48,11 @@ import coil.compose.SubcomposeAsyncImage
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.mevi.tarantula.network.ProductModel
+import com.mevi.tarantula.ui.theme.Fondo
+import com.mevi.tarantula.ui.theme.Primario
+import com.mevi.tarantula.ui.theme.TextoPrincipal
+import com.mevi.tarantula.ui.theme.TextoPrincipalD
+import com.mevi.tarantula.ui.theme.TextoSecundario
 import com.mevi.tarantula.ui.theme.TextoSecundarioD
 import com.mevi.tarantula.utils.Utilities
 import com.tbuonomo.viewpagerdotsindicator.compose.DotsIndicator
@@ -79,6 +87,7 @@ fun ProductDetailsPage(modifier: Modifier = Modifier, productId: String) {
             text = product.title,
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
+            color = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
             modifier = Modifier.padding(8.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -132,6 +141,7 @@ fun ProductDetailsPage(modifier: Modifier = Modifier, productId: String) {
                 Text(
                     text = "$" + product.price,
                     fontSize = 16.sp,
+                    color = if (isSystemInDarkTheme()) TextoSecundarioD else TextoSecundario,
                     style = TextStyle(textDecoration = TextDecoration.LineThrough)
                 )
             }
@@ -139,6 +149,7 @@ fun ProductDetailsPage(modifier: Modifier = Modifier, productId: String) {
             Text(
                 text = "$" + product.actualPrice,
                 fontSize = 20.sp,
+                color = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.weight(1f))
@@ -155,22 +166,38 @@ fun ProductDetailsPage(modifier: Modifier = Modifier, productId: String) {
         Button(
             onClick = {
                 Utilities.addItemToCart(productId, context)
-            }, modifier = Modifier
+            },
+            modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Fondo, contentColor = Color.Black),
         ) {
-            Text("Agregar al carrito", fontSize = 16.sp)
+            Text("Agregar al carrito", fontSize = 16.sp, color = Color.Black, fontWeight = FontWeight.SemiBold)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Descripción : ", fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+        Text(
+            text = "Descripción : ",
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 18.sp,
+            color = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
+        )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = product.description, fontSize = 16.sp)
+        Text(
+            text = product.description,
+            fontSize = 16.sp,
+            color = if (isSystemInDarkTheme()) TextoSecundarioD else TextoSecundario,
+        )
         Spacer(modifier = Modifier.height(8.dp))
 
         if (product.otherDetails.isNotEmpty()) {
-            Text(text = "Otros detalles : ", fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+            Text(
+                text = "Otros detalles : ",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 18.sp,
+                color = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
+            )
             Spacer(modifier = Modifier.height(8.dp))
             product.otherDetails.forEach { (key, value) ->
                 Row(
@@ -178,8 +205,17 @@ fun ProductDetailsPage(modifier: Modifier = Modifier, productId: String) {
                         .fillMaxWidth()
                         .padding(4.dp)
                 ) {
-                    Text(text = "$key : ", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                    Text(text = value, fontSize = 16.sp)
+                    Text(
+                        text = "$key : ",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
+                    )
+                    Text(
+                        text = value,
+                        fontSize = 16.sp,
+                        color = if (isSystemInDarkTheme()) TextoSecundarioD else TextoSecundario,
+                    )
                 }
             }
         }

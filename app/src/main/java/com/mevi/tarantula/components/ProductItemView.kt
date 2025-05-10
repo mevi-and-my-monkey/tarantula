@@ -3,6 +3,7 @@ package com.mevi.tarantula.components
 import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,8 +39,11 @@ import coil.compose.SubcomposeAsyncImage
 import com.mevi.tarantula.core.GlobalNavigation
 import com.mevi.tarantula.core.ProductDetails
 import com.mevi.tarantula.network.ProductModel
+import com.mevi.tarantula.ui.theme.Fondo
 import com.mevi.tarantula.ui.theme.Primario
+import com.mevi.tarantula.ui.theme.TextoPrincipal
 import com.mevi.tarantula.utils.Utilities
+import okhttp3.internal.wait
 
 @Composable
 fun ProductItemView(modifier: Modifier = Modifier, product: ProductModel) {
@@ -51,7 +55,7 @@ fun ProductItemView(modifier: Modifier = Modifier, product: ProductModel) {
                 GlobalNavigation.navContoller.navigate("${ProductDetails}/" + product.id)
             },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = if (isSystemInDarkTheme()) Fondo else Color.White,),
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -66,7 +70,7 @@ fun ProductItemView(modifier: Modifier = Modifier, product: ProductModel) {
                     Box(
                         modifier = Modifier
                             .matchParentSize()
-                            .background(Color.White.copy(alpha = 0.3f)),
+                            .background(if (isSystemInDarkTheme()) Fondo.copy(alpha = 0.3f) else Color.White.copy(alpha = 0.3f)),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(color = Primario)
@@ -78,6 +82,7 @@ fun ProductItemView(modifier: Modifier = Modifier, product: ProductModel) {
                 text = product.title,
                 fontWeight = FontWeight.Bold,
                 maxLines = 2,
+                color = if (isSystemInDarkTheme()) Color.Black else TextoPrincipal,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(8.dp)
             )
@@ -92,6 +97,7 @@ fun ProductItemView(modifier: Modifier = Modifier, product: ProductModel) {
                     Text(
                         text = "$" + product.price,
                         fontSize = 14.sp,
+                        color = if (isSystemInDarkTheme()) Color.Black else TextoPrincipal,
                         style = TextStyle(textDecoration = TextDecoration.LineThrough)
                     )
                 }
@@ -99,6 +105,7 @@ fun ProductItemView(modifier: Modifier = Modifier, product: ProductModel) {
                 Text(
                     text = "$" + product.actualPrice,
                     fontSize = 16.sp,
+                    color = if (isSystemInDarkTheme()) Color.Black else TextoPrincipal,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -107,8 +114,9 @@ fun ProductItemView(modifier: Modifier = Modifier, product: ProductModel) {
                 }) {
                     Icon(
                         imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "Add to cart"
-                    )
+                        contentDescription = "Add to cart",
+                        tint = if (isSystemInDarkTheme()) Color.Black else TextoPrincipal,
+                        )
                 }
             }
         }

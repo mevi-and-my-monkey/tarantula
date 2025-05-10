@@ -104,6 +104,7 @@ fun LoginScreen(
 @Composable
 fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier: Modifier) {
     val context = LocalContext.current
+
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
             loginViewModel.showLoading()
@@ -111,6 +112,7 @@ fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier:
             try {
                 val account = task.getResult(ApiException::class.java)
                 val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+
                 loginViewModel.signInWithGoogleCredential(credential) { success, resultMessage ->
                     if (success) {
                         User.userAdmin = Utilities.isAdmin(loginViewModel, account.email?:"Sin dato")
@@ -167,12 +169,15 @@ fun Body(loginViewModel: LoginViewModel, navigationToHome: () -> Unit, modifier:
         Spacer(modifier = Modifier.height(8.dp))
         CustomOutlinedButton(
             onClick = {
+
                 val opciones = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(context.getString(R.string.default_web_client_id))
                     .requestEmail()
                     .build()
                 val googleSignInCliente = GoogleSignIn.getClient(context, opciones)
-                launcher.launch(googleSignInCliente.signInIntent)
+                googleSignInCliente.signOut().addOnCompleteListener {
+                    launcher.launch(googleSignInCliente.signInIntent)
+                }
             },
             "Continua con Google",
             iconResId = R.drawable.ic_google,

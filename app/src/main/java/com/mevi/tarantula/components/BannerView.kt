@@ -1,6 +1,7 @@
 package com.mevi.tarantula.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,7 @@ import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import com.mevi.tarantula.ui.theme.Fondo
 import com.mevi.tarantula.ui.theme.TextoSecundarioD
 import com.tbuonomo.viewpagerdotsindicator.compose.DotsIndicator
 import com.tbuonomo.viewpagerdotsindicator.compose.model.DotGraphic
@@ -72,7 +74,7 @@ fun BannerView(modifier: Modifier = Modifier) {
                         Box(
                             modifier = Modifier
                                 .matchParentSize()
-                                .background(Color.Gray.copy(alpha = 0.3f)),
+                                .background(if (isSystemInDarkTheme()) Fondo.copy(alpha = 0.3f) else Color.Gray.copy(alpha = 0.3f)),
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator(color = Color.White)

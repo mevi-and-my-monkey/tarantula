@@ -1,5 +1,6 @@
 package com.mevi.tarantula.components
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -27,6 +28,8 @@ import androidx.compose.ui.unit.sp
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.mevi.tarantula.network.ProductModel
+import com.mevi.tarantula.ui.theme.TextoPrincipal
+import com.mevi.tarantula.ui.theme.TextoPrincipalD
 
 @Composable
 fun ShowAllProductsView(modifier: Modifier = Modifier) {
@@ -52,8 +55,9 @@ fun ShowAllProductsView(modifier: Modifier = Modifier) {
         .padding(16.dp)
         .fillMaxSize()) {
         Text(
-            "Productos + ${productList.value.size}",
-            style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            "Productos",
+            style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
+                    color = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal
         )
         Spacer(modifier = Modifier.height(8.dp))
 
