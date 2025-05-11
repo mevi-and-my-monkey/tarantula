@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import com.mevi.tarantula.iu.login.LoginViewModel
 
@@ -39,12 +40,53 @@ object Utilities {
 
                 userDoc.update(updatedCart).addOnCompleteListener {
                     if (it.isSuccessful) {
-                        Toast.makeText(context, "Articulo agregado al carrito", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Articulo agregado al carrito", Toast.LENGTH_SHORT)
+                            .show()
                     } else {
-                        Toast.makeText(context, "Error al agregar al carrito", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Error al agregar al carrito", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }
         }
+    }
+
+    fun removeFromCart(productId: String, context: Context, removeAll: Boolean = false) {
+        val userDoc = Firebase.firestore.collection("users")
+            .document(FirebaseAuth.getInstance().currentUser?.uid!!)
+
+        userDoc.get().addOnCompleteListener {
+            if (it.isSuccessful) {
+                val currentCart = it.result.get("cartItems") as? Map<String, Long> ?: emptyMap()
+                val currentQuantity = currentCart[productId] ?: 0
+                val updatedQuantity = currentQuantity - 1
+
+                val updatedCart = if (updatedQuantity <= 0 || removeAll) {
+                    mapOf("cartItems.$productId" to FieldValue.delete())
+                } else {
+                    mapOf("cartItems.$productId" to updatedQuantity)
+                }
+
+                userDoc.update(updatedCart).addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        Toast.makeText(
+                            context,
+                            "Articulo eliminado del carrito",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(context, "Error al eliminar del carrito", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+            }
+        }
+    }
+
+    fun getDiscountPercentage():Float{
+        return 5.0f
+    }
+    fun getTaxPercentage():Float{
+        return 10.0f
     }
 }

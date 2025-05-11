@@ -16,3 +16,6 @@ object CategoryProducts
 
 @Serializable
 object ProductDetails
+
+@Serializable
+object CheckOut

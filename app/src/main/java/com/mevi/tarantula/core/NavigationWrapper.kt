@@ -11,6 +11,7 @@ import com.mevi.tarantula.iu.LoginScreen
 import com.mevi.tarantula.iu.SplashScreen
 import com.mevi.tarantula.iu.login.LoginViewModel
 import com.mevi.tarantula.iu.pages.CategoryProductsPage
+import com.mevi.tarantula.iu.pages.CheckoutPage
 import com.mevi.tarantula.iu.pages.ProductDetailsPage
 
 @Composable
@@ -44,6 +45,9 @@ fun NavigationWrapper(
         composable("${ProductDetails}/{productId}") {
             val productId = it.arguments?.getString("productId")
             ProductDetailsPage(modifier = modifier, productId?: "")
+        }
+        composable<CheckOut> {
+            CheckoutPage(modifier = modifier)
         }
     }
 }
