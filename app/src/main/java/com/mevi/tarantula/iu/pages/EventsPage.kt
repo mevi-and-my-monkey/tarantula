@@ -9,17 +9,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.mevi.tarantula.User
 
 
 @Composable
 fun EventsPage(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("EVENTS PAGE")
+    if (!User.userInvited) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("EVENTS PAGE")
+        }
+    } else {
+        LoginRequiredScreen()
     }
 }

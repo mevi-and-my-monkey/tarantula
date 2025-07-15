@@ -12,7 +12,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -24,71 +23,74 @@ import androidx.compose.ui.unit.sp
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
+import com.mevi.tarantula.User
 import com.mevi.tarantula.components.CartItemView
 import com.mevi.tarantula.core.CheckOut
 import com.mevi.tarantula.core.GlobalNavigation
 import com.mevi.tarantula.network.UserModel
 import com.mevi.tarantula.ui.theme.Fondo
-import com.mevi.tarantula.utils.Utilities
 
 @Composable
 fun CartPage(modifier: Modifier = Modifier) {
+    if (!User.userInvited) {
+        val userModel = remember {
+            mutableStateOf(UserModel())
+        }
 
-    val userModel = remember {
-        mutableStateOf(UserModel())
-    }
-
-    DisposableEffect(key1 = Unit) {
-        val listener = Firebase.firestore.collection("users")
-            .document(FirebaseAuth.getInstance().currentUser?.uid!!)
-            .addSnapshotListener { it, _ ->
-                if (it != null) {
-                    val result = it.toObject(UserModel::class.java)
-                    if (result != null) {
-                        userModel.value = result
+        DisposableEffect(key1 = Unit) {
+            val listener = Firebase.firestore.collection("users")
+                .document(FirebaseAuth.getInstance().currentUser?.uid!!)
+                .addSnapshotListener { it, _ ->
+                    if (it != null) {
+                        val result = it.toObject(UserModel::class.java)
+                        if (result != null) {
+                            userModel.value = result
+                        }
                     }
+                }
+
+            onDispose {
+                listener.remove()
+            }
+        }
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = ("Tu carrito"),
+                style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            )
+
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                items(userModel.value.cartItems.toList(), key = { it.first }) { (productId, qyt) ->
+                    CartItemView(productId = productId, qyt = qyt)
                 }
             }
 
-        onDispose {
-            listener.remove()
-        }
-    }
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = ("Tu carrito"),
-            style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        )
-
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(userModel.value.cartItems.toList(), key = { it.first }) { (productId, qyt) ->
-                CartItemView(productId = productId, qyt = qyt)
+            Button(
+                onClick = {
+                    GlobalNavigation.navContoller.navigate(CheckOut)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Fondo,
+                    contentColor = Color.Black
+                ),
+            ) {
+                Text(
+                    "Calcular pedido",
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
-        }
 
-        Button(
-            onClick = {
-                GlobalNavigation.navContoller.navigate(CheckOut)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Fondo,
-                contentColor = Color.Black
-            ),
-        ) {
-            Text(
-                "Calcular pedido",
-                fontSize = 16.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.SemiBold
-            )
         }
-
+    }else{
+        LoginRequiredScreen()
     }
 }

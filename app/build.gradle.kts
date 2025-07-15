@@ -52,7 +52,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+}
 
+kapt {
+    javacOptions {
+        option("-Xadd-opens", "jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED")
+    }
 }
 
 dependencies {
@@ -103,9 +108,9 @@ dependencies {
     kapt(libs.hilt.compiler)
     // dataStore
     implementation(libs.androidx.datastore.preferences)
-    // Glide
+    // Glide (cambiado a kapt)
     implementation(libs.glide.v4151)
-    annotationProcessor(libs.compiler.v4151)
+    kapt(libs.compiler.v4151)
 
     implementation(platform(libs.firebase.bom))
 
