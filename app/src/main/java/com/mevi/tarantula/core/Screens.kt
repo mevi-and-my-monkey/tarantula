@@ -18,4 +18,10 @@ object CategoryProducts
 object ProductDetails
 
 @Serializable
+object ProductEdit
+
+@Serializable
+object AddProduct
+
+@Serializable
 object CheckOut

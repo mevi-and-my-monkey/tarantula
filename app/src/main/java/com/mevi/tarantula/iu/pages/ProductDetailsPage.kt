@@ -1,6 +1,5 @@
 package com.mevi.tarantula.iu.pages
 
-import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -18,10 +17,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -37,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -47,9 +45,11 @@ import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import com.mevi.tarantula.User
+import com.mevi.tarantula.core.GlobalNavigation
+import com.mevi.tarantula.core.ProductEdit
 import com.mevi.tarantula.network.ProductModel
 import com.mevi.tarantula.ui.theme.Fondo
-import com.mevi.tarantula.ui.theme.Primario
 import com.mevi.tarantula.ui.theme.TextoPrincipal
 import com.mevi.tarantula.ui.theme.TextoPrincipalD
 import com.mevi.tarantula.ui.theme.TextoSecundario
@@ -69,7 +69,7 @@ fun ProductDetailsPage(modifier: Modifier = Modifier, productId: String) {
             .document(productId).get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    var result = it.result.toObject(ProductModel::class.java)
+                    val result = it.result.toObject(ProductModel::class.java)
                     if (result != null) {
                         product = result
                     }
@@ -83,13 +83,30 @@ fun ProductDetailsPage(modifier: Modifier = Modifier, productId: String) {
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text(
-            text = product.title,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            color = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
-            modifier = Modifier.padding(8.dp)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = product.title,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
+                modifier = Modifier.padding(8.dp)
+            )
+
+            if (User.userAdmin) {
+                IconButton(onClick = {
+                    GlobalNavigation.navContoller.navigate("$ProductEdit/" + product.id)
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Editar opciones",
+                        tint = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
+                    )
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(8.dp))
 
         Column {
@@ -170,9 +187,17 @@ fun ProductDetailsPage(modifier: Modifier = Modifier, productId: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Fondo, contentColor = Color.Black),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Fondo,
+                contentColor = Color.Black
+            ),
         ) {
-            Text("Agregar al carrito", fontSize = 16.sp, color = Color.Black, fontWeight = FontWeight.SemiBold)
+            Text(
+                "Agregar al carrito",
+                fontSize = 16.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.SemiBold
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))

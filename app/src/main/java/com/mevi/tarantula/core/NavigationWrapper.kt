@@ -10,9 +10,11 @@ import com.mevi.tarantula.iu.HomeScreen
 import com.mevi.tarantula.iu.LoginScreen
 import com.mevi.tarantula.iu.SplashScreen
 import com.mevi.tarantula.iu.login.LoginViewModel
+import com.mevi.tarantula.iu.pages.AddProductView
 import com.mevi.tarantula.iu.pages.CategoryProductsPage
 import com.mevi.tarantula.iu.pages.CheckoutPage
 import com.mevi.tarantula.iu.pages.ProductDetailsPage
+import com.mevi.tarantula.iu.pages.ProductEditPage
 
 @Composable
 fun NavigationWrapper(
@@ -39,13 +41,23 @@ fun NavigationWrapper(
 
         composable("${CategoryProducts}/{categoryId}") {
             val categoryId = it.arguments?.getString("categoryId")
-            CategoryProductsPage(modifier = modifier, navController, categoryId?: "")
+            CategoryProductsPage(modifier = modifier, navController, categoryId ?: "")
         }
 
         composable("${ProductDetails}/{productId}") {
             val productId = it.arguments?.getString("productId")
-            ProductDetailsPage(modifier = modifier, productId?: "")
+            ProductDetailsPage(modifier = modifier, productId ?: "")
         }
+
+        composable("${ProductEdit}/{productId}") {
+            val productId = it.arguments?.getString("productId")
+            ProductEditPage(modifier = modifier, productId ?: "")
+        }
+
+        composable<AddProduct> {
+            AddProductView(modifier = modifier)
+        }
+
         composable<CheckOut> {
             CheckoutPage(modifier = modifier)
         }
