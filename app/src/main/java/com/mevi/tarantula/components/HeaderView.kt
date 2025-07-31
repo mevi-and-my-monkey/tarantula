@@ -1,19 +1,26 @@
 package com.mevi.tarantula.components
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +53,8 @@ fun HeaderView(modifier: Modifier = Modifier) {
     var name by rememberSaveable { mutableStateOf("") }
     val firebaseUser = FirebaseAuth.getInstance().currentUser
     val photoUrl = firebaseUser?.photoUrl?.toString()
+    var menuExpanded by rememberSaveable { mutableStateOf(false) }
+    var menuExpandedEdit by rememberSaveable { mutableStateOf(false) }
 
     if (!User.userInvited) {
         LaunchedEffect(Unit) {
@@ -82,13 +92,138 @@ fun HeaderView(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.width(8.dp))
 
             Column {
-                Text(if (!User.userInvited) "Bienvenido de nuevo" else "Bienvenido", color = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal)
-                Text(text = name, style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold), color = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal)
+                Text(
+                    if (!User.userInvited) "Bienvenido de nuevo" else "Bienvenido",
+                    color = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal
+                )
+                Text(
+                    text = name,
+                    style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
+                    color = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal
+                )
             }
         }
 
-        IconButton(onClick = {}) {
-            Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
+        if (User.userAdmin) {
+            Box {
+                IconButton(onClick = { menuExpanded = true }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Más opciones",
+                        tint = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = menuExpanded,
+                    onDismissRequest = { menuExpanded = false },
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.surface)
+                        .width(200.dp)
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.List,
+                                    contentDescription = null,
+                                    tint = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text("Agregar producto", fontSize = 16.sp)
+                            }
+                        },
+                        onClick = {
+                            menuExpanded = false
+                        },
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+
+                    DropdownMenuItem(
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.DateRange,
+                                    contentDescription = null,
+                                    tint = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text("Agregar evento", fontSize = 16.sp)
+                            }
+                        },
+                        onClick = {
+                            menuExpanded = false
+                        },
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
+            }
+
+            Box {
+                IconButton(onClick = { menuExpandedEdit = true }) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Editar opciones",
+                        tint = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = menuExpandedEdit,
+                    onDismissRequest = { menuExpandedEdit = false },
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.surface)
+                        .width(200.dp)
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.List,
+                                    contentDescription = null,
+                                    tint = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text("Editar producto", fontSize = 16.sp)
+                            }
+                        },
+                        onClick = {
+                            menuExpandedEdit = false
+                        },
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+
+                    DropdownMenuItem(
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.DateRange,
+                                    contentDescription = null,
+                                    tint = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text("Editar evento", fontSize = 16.sp)
+                            }
+                        },
+                        onClick = {
+                            menuExpandedEdit = false
+                        },
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
+            }
         }
     }
 }
