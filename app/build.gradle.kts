@@ -5,6 +5,7 @@ plugins {
     kotlin("kapt")
     alias(libs.plugins.jetbrainsKotlinSerialization)
     alias(libs.plugins.kotlin.parcelize)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -53,8 +54,13 @@ android {
     }
 }
 
-dependencies {
+kapt {
+    javacOptions {
+        option("-Xadd-opens", "jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED")
+    }
+}
 
+dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -67,6 +73,8 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.config.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -91,7 +99,6 @@ dependencies {
     debugImplementation(libs.ui.tooling)
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.navigation.compose)
-
     //retrofit
     implementation(libs.gson)
     implementation(libs.retrofit)
@@ -99,5 +106,26 @@ dependencies {
     // Inyeccion de dependecias
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    // dataStore
+    implementation(libs.androidx.datastore.preferences)
+    // Glide (cambiado a kapt)
+    implementation(libs.glide.v4151)
+    kapt(libs.compiler.v4151)
+
+    implementation(platform(libs.firebase.bom))
+
+    // Firebase libraries gestionadas por el BOM
+    implementation(libs.firebase.firestore.ktx)
+    // Firebase
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.play.services.auth)
+    implementation("com.google.android.gms:play-services-auth:20.4.1")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-config")
+    implementation("com.google.firebase:firebase-analytics")
+
+    //coil
+    implementation ("io.coil-kt:coil-compose:2.2.0")
+    implementation("com.tbuonomo:dotsindicator:5.1.0")
 
 }

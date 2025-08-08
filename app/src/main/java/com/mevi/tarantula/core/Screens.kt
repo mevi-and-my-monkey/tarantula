@@ -10,3 +10,18 @@ object Login
 
 @Serializable
 object Home
+
+@Serializable
+object CategoryProducts
+
+@Serializable
+object ProductDetails
+
+@Serializable
+object ProductEdit
+
+@Serializable
+object AddProduct
+
+@Serializable
+object CheckOut
