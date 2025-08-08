@@ -27,6 +27,7 @@ val Exito = Color(0xFF4CAF50)
 val Error = Color(0xFFD32F2F)
 val Advertencia = Color(0xFFFFA000)
 val IndicatorNavgation = Color(0x33D4A474)
+val WhatsAppBoton = Color(0xFF1EBE57)
 
 // esquema de colores claro y oscuro
 val LightColorScheme = lightColorScheme(

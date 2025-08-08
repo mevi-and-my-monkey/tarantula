@@ -17,7 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
@@ -95,7 +94,7 @@ fun ProductDetailsPage(modifier: Modifier = Modifier, productId: String) {
                 modifier = Modifier.padding(8.dp)
             )
 
-            if (User.userAdmin) {
+            if (User.userAdmin && !User.userInvited) {
                 IconButton(onClick = {
                     GlobalNavigation.navContoller.navigate("$ProductEdit/" + product.id)
                 }) {

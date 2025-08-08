@@ -31,7 +31,8 @@ fun NavigationWrapper(
         composable<Login> {
             LoginScreen(modifier = modifier, loginViewModel) {
                 navController.navigate(Home) {
-                    popUpTo<Home> { inclusive = true }
+                    popUpTo<Login> { inclusive = true }
+                    launchSingleTop = true
                 }
             }
         }

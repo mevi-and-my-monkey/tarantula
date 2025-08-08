@@ -102,7 +102,7 @@ fun HeaderView(modifier: Modifier = Modifier) {
             }
         }
 
-        if (User.userAdmin) {
+        if (User.userAdmin && !User.userInvited) {
             Box {
                 IconButton(onClick = { menuExpanded = true }) {
                     Icon(

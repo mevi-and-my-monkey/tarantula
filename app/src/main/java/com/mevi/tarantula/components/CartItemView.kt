@@ -116,14 +116,28 @@ fun CartItemView(modifier: Modifier = Modifier, productId: String, qyt: Long) {
                     IconButton(onClick = {
                         Utilities.removeFromCart(productId, context)
                     }) {
-                        Text(text = "-", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "-",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isSystemInDarkTheme()) Color.Black else TextoPrincipal
+                        )
                     }
-                    Text(text = "$qyt", fontSize = 16.sp)
+                    Text(
+                        text = "$qyt",
+                        fontSize = 16.sp,
+                        color = if (isSystemInDarkTheme()) Color.Black else TextoPrincipal
+                    )
 
                     IconButton(onClick = {
                         Utilities.addItemToCart(productId, context)
                     }) {
-                        Text(text = "+", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "+",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isSystemInDarkTheme()) Color.Black else TextoPrincipal,
+                        )
                     }
                 }
             }

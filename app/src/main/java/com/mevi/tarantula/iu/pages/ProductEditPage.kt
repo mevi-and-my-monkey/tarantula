@@ -39,6 +39,7 @@ import com.google.firebase.firestore.firestore
 import com.mevi.tarantula.components.CategoryDropdown
 import com.mevi.tarantula.components.generics.CustomOutlinedTextField
 import com.mevi.tarantula.core.GlobalNavigation
+import com.mevi.tarantula.core.Home
 import com.mevi.tarantula.network.ProductModel
 import com.mevi.tarantula.ui.theme.Fondo
 import com.mevi.tarantula.ui.theme.Primario
@@ -258,7 +259,9 @@ fun ProductEditPage(modifier: Modifier = Modifier, productId: String) {
                         .delete()
                         .addOnSuccessListener {
                             Toast.makeText(context, "Producto eliminado", Toast.LENGTH_SHORT).show()
-                            GlobalNavigation.navContoller.popBackStack()
+                            GlobalNavigation.navContoller.navigate(Home) {
+                                popUpTo<Home> { inclusive = true }
+                            }
                         }
                         .addOnFailureListener {
                             Toast.makeText(context, "Error al eliminar", Toast.LENGTH_SHORT).show()
