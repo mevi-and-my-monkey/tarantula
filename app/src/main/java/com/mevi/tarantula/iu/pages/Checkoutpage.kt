@@ -157,22 +157,16 @@ fun CheckoutPage(modifier: Modifier = Modifier) {
         Spacer(Modifier.weight(1f))
         Button(
             onClick = {
-                val productsMessage = productList
-                    .mapNotNull { product ->
-                        val qty = userModel.value.cartItems[product.id] ?: 0
-                        if (qty > 0) {
-                            "x$qty ${product.title}"
-                        } else null
-                    }
-                    .joinToString("\n")
+                val productos = productList.mapNotNull { product ->
+                    val qty = userModel.value.cartItems[product.id] ?: 0
+                    if (qty > 0) product.title to qty else null
+                }
 
-                val customMessage = """
-                    Hola, me gustaría solicitar el siguiente pedido:
-                    $productsMessage
-                    Total: $${total.floatValue}
-                    Entregar a:
-                    ${userModel.value.name ?: ""}
-                """.trimIndent()
+                val customMessage = generarMensajePedido(
+                    productos = productos,
+                    total = total.floatValue.toDouble(),
+                    nombreCliente = userModel.value.name ?: ""
+                )
 
                 val phoneNumber = "525514023853"
                 val url = "https://wa.me/$phoneNumber?text=${Uri.encode(customMessage)}"
@@ -220,3 +214,24 @@ fun RowCheckoutItems(title: String, value: String) {
         Text(text = "$$value", fontSize = 18.sp)
     }
 }
+
+fun generarMensajePedido(
+    productos: List<Pair<String, Long>>,
+    total: Double,
+    nombreCliente: String
+): String {
+    val sb = StringBuilder()
+    sb.appendLine("Hola, me gustaría solicitar el siguiente pedido:")
+    sb.appendLine()
+
+    productos.forEach { (nombre, cantidad) ->
+        sb.appendLine("- x$cantidad $nombre")
+    }
+
+    sb.appendLine()
+    sb.appendLine("Total: $${"%.2f".format(total)}")
+    sb.appendLine("Entregar a: $nombreCliente")
+
+    return sb.toString().trim()
+}
+
