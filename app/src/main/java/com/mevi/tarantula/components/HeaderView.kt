@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -42,6 +44,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
 import com.mevi.tarantula.R
 import com.mevi.tarantula.User
+import com.mevi.tarantula.core.AddMovie
 import com.mevi.tarantula.core.AddProduct
 import com.mevi.tarantula.core.GlobalNavigation
 import com.mevi.tarantula.ui.theme.TextoPrincipal
@@ -125,13 +128,13 @@ fun HeaderView(modifier: Modifier = Modifier) {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.List,
+                                    painter = painterResource(id = R.drawable.ic_book_three),
                                     contentDescription = null,
                                     tint = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
-                                Text("Agregar producto", fontSize = 16.sp)
+                                Text("Agregar libro", fontSize = 16.sp)
                             }
                         },
                         onClick = {
@@ -140,7 +143,27 @@ fun HeaderView(modifier: Modifier = Modifier) {
                         },
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
-
+                    DropdownMenuItem(
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_movie),
+                                    contentDescription = null,
+                                    tint = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text("Agregar pelicula", fontSize = 16.sp)
+                            }
+                        },
+                        onClick = {
+                            menuExpanded = false
+                            GlobalNavigation.navContoller.navigate(AddMovie)
+                        },
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                     DropdownMenuItem(
                         text = {
                             Row(

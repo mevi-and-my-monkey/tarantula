@@ -24,4 +24,7 @@ object ProductEdit
 object AddProduct
 
 @Serializable
+object AddMovie
+
+@Serializable
 object CheckOut

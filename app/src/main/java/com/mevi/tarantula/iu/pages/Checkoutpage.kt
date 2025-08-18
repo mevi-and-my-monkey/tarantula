@@ -42,6 +42,7 @@ import com.mevi.tarantula.network.UserModel
 import com.mevi.tarantula.utils.Utilities
 import androidx.core.net.toUri
 import com.mevi.tarantula.R
+import com.mevi.tarantula.User
 import com.mevi.tarantula.ui.theme.WhatsAppBoton
 
 @Composable
@@ -168,8 +169,7 @@ fun CheckoutPage(modifier: Modifier = Modifier) {
                     nombreCliente = userModel.value.name ?: ""
                 )
 
-                val phoneNumber = "525514023853"
-                val url = "https://wa.me/$phoneNumber?text=${Uri.encode(customMessage)}"
+                val url = "https://wa.me/${User.whatsApp}?text=${Uri.encode(customMessage)}"
 
                 val intent = Intent(Intent.ACTION_VIEW).apply {
                     data = url.toUri()

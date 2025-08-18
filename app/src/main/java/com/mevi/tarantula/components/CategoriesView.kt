@@ -39,7 +39,6 @@ import com.mevi.tarantula.network.CategoryModel
 import com.mevi.tarantula.ui.theme.Fondo
 import com.mevi.tarantula.ui.theme.Primario
 import com.mevi.tarantula.ui.theme.TextoPrincipal
-import com.mevi.tarantula.ui.theme.TextoPrincipalD
 import com.mevi.tarantula.utils.Utilities
 
 @Composable
@@ -55,7 +54,11 @@ fun CategoriesView(modifier: Modifier = Modifier) {
                     val resultList = it.result.documents.mapNotNull { doc ->
                         doc.toObject(CategoryModel::class.java)
                     }
-                    categoryList.value = resultList
+                    val orderedList = resultList.sortedWith(
+                        compareBy<CategoryModel> { it.name.lowercase() != "peliculas" }
+                            .thenBy { it.name.lowercase() }
+                    )
+                    categoryList.value = orderedList
                 }
             }
     }

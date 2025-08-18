@@ -48,7 +48,7 @@ fun ShowAllProductsView(modifier: Modifier = Modifier) {
 
 
     Column(modifier = modifier
-        .padding(16.dp)
+        .padding(8.dp)
         .fillMaxSize()) {
         Text(
             "Productos",

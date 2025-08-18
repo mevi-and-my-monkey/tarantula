@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
@@ -62,7 +61,7 @@ fun BannerView(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp)
+                    .height(160.dp)
                     .clip(RoundedCornerShape(16.dp))
             ) {
                 SubcomposeAsyncImage(

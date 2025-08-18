@@ -10,6 +10,7 @@ import com.mevi.tarantula.iu.HomeScreen
 import com.mevi.tarantula.iu.LoginScreen
 import com.mevi.tarantula.iu.SplashScreen
 import com.mevi.tarantula.iu.login.LoginViewModel
+import com.mevi.tarantula.iu.pages.AddMovieView
 import com.mevi.tarantula.iu.pages.AddProductView
 import com.mevi.tarantula.iu.pages.CategoryProductsPage
 import com.mevi.tarantula.iu.pages.CheckoutPage
@@ -57,6 +58,10 @@ fun NavigationWrapper(
 
         composable<AddProduct> {
             AddProductView(modifier = modifier)
+        }
+
+        composable<AddMovie> {
+            AddMovieView(modifier = modifier)
         }
 
         composable<CheckOut> {

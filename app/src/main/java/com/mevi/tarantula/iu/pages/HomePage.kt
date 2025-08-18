@@ -25,7 +25,7 @@ fun HomePage(modifier: Modifier) {
     {
         HeaderView(modifier)
         Spacer(modifier = Modifier.height(10.dp))
-        BannerView(modifier = Modifier.height(220.dp))
+        BannerView(modifier = Modifier.height(200.dp))
         Text("Categorias", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold), color = if (isSystemInDarkTheme()) TextoPrincipalD else TextoPrincipal)
         Spacer(modifier = Modifier.height(10.dp))
         CategoriesView()

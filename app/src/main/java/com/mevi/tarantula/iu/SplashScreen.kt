@@ -45,7 +45,9 @@ fun SplashScreen(navController: NavController, loginViewModel: LoginViewModel) {
         val remoteConfig = Firebase.remoteConfig
         remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
             if (task.isSuccessful) {
+                val whatsApp = remoteConfig.getString("whatsapp_administrador")
                 val jsonString = remoteConfig.getString("list_admin")
+                User.whatsApp = whatsApp.ifEmpty { "5514023853" }
                 val list = try {
                     val jsonArray = JSONArray(jsonString)
                     List(jsonArray.length()) { i -> jsonArray.getString(i) }
